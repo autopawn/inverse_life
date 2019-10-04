@@ -3,6 +3,8 @@
 
 #include "board.h"
 
-board *reverse_step(const board *target, int void_ini_guess);
+void reverse_step(board *target, int void_ini_guess);
+
+void forward_step(board *bo);
 
 #endif

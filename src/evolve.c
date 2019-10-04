@@ -27,7 +27,7 @@ int dist_cost(int dist){
     #endif
 }
 
-board *reverse_step(const board *target, int void_ini_guess){
+void reverse_step(board *target, int void_ini_guess){
     int size_y = target->size_y;
     int size_x = target->size_x;
     board *guess = void_ini_guess? board_init(size_y,size_x) : board_copy(target);
@@ -92,7 +92,29 @@ board *reverse_step(const board *target, int void_ini_guess){
         board_set(guess,cand.y,cand.x,!prev);
     };
 
+    /* Modify target */
+    for(int i=0;i<target->size_y*target->size_x;i++){
+        target->cells[i] = guess->cells[i];
+    }
     free(candidates);
     board_free(costs);
-    return guess;
+    board_free(guess);
+}
+
+void forward_step(board *bo){
+    board *nbo = board_init(bo->size_y,bo->size_x);
+    // Check if each cell changes
+    for(int y=0;y<bo->size_y;y++){
+        for(int x=0;x<bo->size_x;x++){
+            int neighs   = board_neighs(bo,y,x);
+            int bo_stat  = board_get(bo,y,x);
+            int dist = neigh_dist(bo_stat,neighs,1);
+            board_set(nbo,y,x,dist<=0);
+        }
+    }
+    // Copy on bo
+    for(int i=0;i<bo->size_y*bo->size_x;i++){
+        bo->cells[i] = nbo->cells[i];
+    }
+    board_free(nbo);
 }
